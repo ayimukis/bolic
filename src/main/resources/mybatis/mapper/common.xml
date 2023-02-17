@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common">
+
+    <select id="getCommCodeList" parameterType="Map" resultType="Map">
+        SELECT
+        UP_CODE_CD
+        ,CODE_CD
+        ,USE_YN
+        ,CODE_NM
+        ,CODE_DESC
+        ,ORDERBY
+        FROM T_CODE_MST
+        WHERE UP_CODE_CD = '00'
+        AND USE_YN IN ('Y', 'N')
+        <if test="searchText != null and searchText != ''">
+            AND (
+            CODE_CD LIKE CONCAT ( '%' , #{searchText} , '%' )
+
+            OR
+
+            CODE_NM LIKE CONCAT ( '%' , #{searchText} , '%' )
+            )
+        </if>
+
+        ORDER BY ORDERBY, CODE_CD
+
+        LIMIT ${page}, ${pageSize}
+    </select>
+
+    <select id="getCommCodeListTotal" parameterType="Map" resultType="int">
+        SELECT
+        COUNT(1) AS CNT
+        FROM T_CODE_MST
+        WHERE UP_CODE_CD = '00'
+        AND USE_YN IN ('Y', 'N')
+        <if test="searchText != null and searchText != ''">
+            AND (
+            CODE_CD LIKE CONCAT ( '%' , #{searchText} , '%' )
+
+            OR
+
+            CODE_NM LIKE CONCAT ( '%' , #{searchText} , '%' )
+            )
+        </if>
+    </select>
+
+    <select id="getCommSubCodeList" parameterType="Map" resultType="Map">
+        SELECT
+            UP_CODE_CD
+             ,CODE_CD
+             ,USE_YN
+             ,CODE_NM
+             ,CODE_DESC
+             ,ORDERBY
+        FROM T_CODE_MST
+        WHERE UP_CODE_CD = #{upCodeCd}
+          AND USE_YN IN ('Y', 'N')
+        ORDER BY ORDERBY, CODE_CD
+            LIMIT ${page} , ${pageSize}
+    </select>
+
+    <select id="getCommSubCodeListTotal" parameterType="Map" resultType="int">
+        SELECT
+            COUNT(1) AS CNT
+        FROM T_CODE_MST
+        WHERE UP_CODE_CD = #{upCodeCd}
+          AND USE_YN IN ('Y', 'N')
+    </select>
+
+    <insert id="insertCommCode" parameterType="Map">
+        INSERT INTO T_CODE_MST(
+                               UP_CODE_CD
+                              ,CODE_CD
+                              ,CODE_NM
+                              ,CODE_DESC
+                              ,ORDERBY
+                              ,USE_YN
+                              ,CREATE_ID
+                              ,CREATE_DT
+                              ,UPDATE_ID
+                              ,UPDATE_DT
+        )VALUES(
+                   #{upCodeCd}
+               ,#{codeCd}
+               ,#{codeNm}
+               ,#{codeDesc}
+               ,#{orderby}
+               ,#{useYn}
+               ,#{userId}
+               ,now()
+               ,#{userId}
+               ,now()
+               )
+    </insert>
+
+    <update id="deleteCommCode" parameterType="Map">
+        UPDATE T_CODE_MST SET
+            USE_YN = CONCAT('D', date_format(now(), '%Y%m%d%H%i%s'))
+                            ,UPDATE_ID = #{userId}
+                            ,UPDATE_DT = NOW()
+        WHERE CODE_CD = #{codeCd}
+          AND UP_CODE_CD = '00'
+          AND USE_YN = 'Y'
+    </update>
+
+    <insert id="insertCommSubCode" parameterType="Map">
+        INSERT INTO T_CODE_MST (
+                                UP_CODE_CD
+                               ,CODE_CD
+                               ,CODE_NM
+                               ,CODE_DESC
+                               ,ORDERBY
+                               ,USE_YN
+                               ,CREATE_ID
+                               ,CREATE_DT
+                               ,UPDATE_ID
+                               ,UPDATE_DT
+        )VALUES(
+                   #{upCodeCd}
+               ,#{codeCd}
+               ,#{codeNm}
+               ,#{codeDesc}
+               ,#{orderby}
+               ,#{useYn}
+               ,#{userId}
+               ,now()
+               ,#{userId}
+               ,now()
+               )
+    </insert>
+
+    <update id="deleteCommSubCode" parameterType="Map">
+        UPDATE T_CODE_MST SET
+            USE_YN = CONCAT('D', date_format(now(), '%Y%m%d%H%i%s'))
+                            ,UPDATE_ID = #{userId}
+                            ,UPDATE_DT = NOW()
+        WHERE CODE_CD = #{codeCd}
+          AND UP_CODE_CD = #{upCodeCd}
+          AND USE_YN = 'Y'
+    </update>
+
+    <update id="updateCommSubCode" parameterType="Map">
+        UPDATE T_CODE_MST SET
+            CODE_NM = #{codeNm}
+                            ,CODE_DESC = #{codeDesc}
+                            ,ORDERBY = #{orderby}
+                            ,USE_YN = #{useYn}
+                            ,UPDATE_ID = #{userId}
+                            ,UPDATE_DT = now()
+        WHERE CODE_CD = #{codeCd}
+          AND UP_CODE_CD = #{upCodeCd}
+    </update>
+
+    <select id="getCodeList" parameterType="Map" resultType="Map">
+        SELECT
+            UP_CODE_CD,
+            CODE_CD,
+            CODE_NM,
+            CODE_DESC,
+            ORDERBY,
+            USE_YN
+        FROM T_CODE_MST
+        WHERE UP_CODE_CD = #{upCodeCd}
+          AND USE_YN = 'Y'
+        ORDER BY ORDERBY ASC, CODE_CD ASC
+    </select>
+
+    <select id="getPageDescList" parameterType="Map" resultType="Map">
+        SELECT * FROM T_PAGE_DESC WHERE PAGE_CD = #{pageCd}
+    </select>
+
+    <select id="getPageDesc" parameterType="Map" resultType="Map">
+        SELECT * FROM T_PAGE_DESC WHERE PAGE_CD = #{pageCd} AND DATA_CD = #{dataCd}
+    </select>
+
+    <insert id="insertPageDesc" parameterType="Map">
+        INSERT INTO T_PAGE_DESC(
+            PAGE_CD,
+            DATA_CD,
+            SUBJECT,
+            DATA_DESC,
+            WARNING
+        )VALUES(
+                   #{pageCd},
+                   #{dataCd},
+                   '',
+                   '',
+                   ''
+               )
+    </insert>
+
+    <update id="updatePageDesc" parameterType="Map">
+        UPDATE T_PAGE_DESC SET
+                               SUBJECT = #{subject},
+                               DATA_DESC = #{dataDesc},
+                               WARNING = #{warning}
+        WHERE PAGE_CD = #{pageCd}
+          AND DATA_CD = #{dataCd}
+    </update>
+
+    <select id="getApproKey" parameterType="Map" resultType="Map">
+        SELECT
+            COMP_SEQ,
+            PROCESS_ID,
+            APPR_CD,
+            APPR_DT,
+            APPR_SN,
+            APPROKEY_DESC
+        FROM T_APPROKEY_MST
+        WHERE COMP_SEQ = #{compSeq}
+          AND PROCESS_ID = #{processId}
+          AND APPR_CD = #{apprCd}
+          AND APPR_DT = DATE_FORMAT( now(), '%Y%m%d' )
+        ORDER BY APPR_SN DESC
+            LIMIT 1
+    </select>
+
+    <insert id="insertApproKey" parameterType="Map">
+        INSERT INTO T_APPROKEY_MST(
+            COMP_SEQ,
+            PROCESS_ID,
+            APPR_CD,
+            APPR_DT,
+            APPR_SN,
+            APPROKEY_DESC
+        )VALUES(
+                   #{compSeq},
+                   #{processId},
+                   #{apprCd},
+                   #{apprDt},
+                   #{apprSn},
+                   #{approkeyDesc}
+               )
+    </insert>
+</mapper>

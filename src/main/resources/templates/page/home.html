@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/defaultLayout">
+<!-- Page Content -->
+<th:block layout:fragment="content">
+  <head>
+    <title>Home</title>
+    <style>
+      table {
+        /*width: 1000px;*/
+        width: 90%;
+        border: 1px;
+        border-style: solid;
+      }
+
+      table tr td {
+        border: 1px;
+        border-style: solid;
+        height: 40px;
+        padding-left:10px;
+      }
+
+      .k-header .k-link {
+        text-align: center;
+      }
+
+      .k-grid-content>table>tbody>tr {
+        text-align: center;
+      }
+
+      td {
+        margin:10px;
+      }
+
+      .tutorial {
+        background: #fff1c0;
+      }
+    </style>
+  </head>
+  <body>
+  <p>화면 url</p>
+  <table>
+
+    <tr>
+      <th>화면경로</th>
+      <th>url(xxxx.jsp)</th>
+    </tr>
+    <tr class="tutorial">
+      <td>test</td>
+      <td><a href="/test">  /test2 </a></td>
+    </tr>
+
+  </table>
+
+  </body>
+</th:block>
+</html>
